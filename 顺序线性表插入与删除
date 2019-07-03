@@ -10,17 +10,15 @@ using namespace std;
 typedef int Elemtype;
 typedef int Status;
 typedef struct{
-	Elemtype data[LIST_INIT_SIZE];
+	Elemtype *data;
 	int Length;
-	Elemtype* elem;  //线性表内存指针
 }Sqlist;
 Status CreatList(Sqlist& L){
-	L.elem = (int*)malloc(LIST_INIT_SIZE*sizeof(Elemtype));  //malloc函数返回指向分配区域的指针
+	L.data= (int*)malloc(LIST_INIT_SIZE*sizeof(Elemtype));  //malloc函数返回指向分配区域的指针
 	printf("请输入数值对顺序表进行初始化\n");
 	Elemtype e; int i = 0; L.Length = 0;
 	while (cin >> e && L.Length<=LIST_INIT_SIZE){
-		L.data[i]= e;
-		i++;
+		L.data[i++]= e;
 		L.Length++;
 	}
 	return OK;
