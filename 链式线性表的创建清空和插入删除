@@ -1,0 +1,109 @@
+#include<iostream>
+#include<stdio.h>
+#include<stdlib.h>
+#include<time.h>
+using namespace std;
+#define ERROR 0
+#define OK 1
+typedef int Status;
+typedef int Elemtype;
+typedef struct Node{
+	Elemtype data;
+    struct Node *next;  //类内含有Node成员；需先声明Node再定义
+}Node;
+typedef struct Node* LinkList;
+//头插法创建单链表
+Status Creat_LinkList_Head(LinkList &L,const int n){
+	L = (LinkList)malloc(sizeof(Node));
+	L->next = NULL;   //创建空结点
+	srand(time(0)); //初始化随机数种子;Srand是种下随机种子数，
+	//每次种下的种子不一样，用Rand得到的随机数就不一样。为了每回种下一个不一样的种子，所以就选用Time(0)，Time(0)是得到当前时时间值
+	LinkList p;
+	for (int i = 0; i < n; i++){
+		p = (LinkList)malloc(sizeof(Node));  //新建节点
+		p->data = rand() % 100 + 1;  //随机生成100以内的数字;要取得[a,b)的随机整数，使用(rand() % (b-a))+ a 
+		p->next = L->next;
+		L->next = p;
+	}
+	return OK;
+}
+Status Creat_LinkList_Tail(LinkList &L, const int n){
+	L = (LinkList)malloc(sizeof(Node));
+	LinkList r = L,p;
+	srand(time(0));
+	for (int i = 0; i < n; i++){
+		p = (LinkList)malloc(sizeof(Node));  
+		p->data = rand() % 100 + 1;  //随机生成100以内的数字;要取得[a,b)的随机整数，使用(rand() % (b-a))+ a 
+		r->next = p;
+		r = p;
+	}
+	r->next = NULL;
+	return OK;
+}
+Status Clear_LinkList(LinkList &L){
+	LinkList p, q;
+	p = L->next;
+	while (p){             //到达表尾后p为空地址
+		q = p->next;
+		free(p);
+		p = q;
+	}
+	L->next = NULL;
+	return OK;
+}
+Status Get_LinkList(LinkList &L,int i,Elemtype e){
+	LinkList p = L->next;         //P为链表的第一个节点
+	int j = 1;
+	while (p && j<i){
+		p = p->next;
+		++j;
+	}
+	if (!p || j>i)
+		return ERROR;
+		e = p->data;
+	return OK;
+}
+Status Insert_LinkList(LinkList &L, int i, Elemtype e){
+	LinkList p = L,q;         //P为链表的空结点
+	int j = 1;
+	while (p && j<i){
+		p = p->next;
+		++j;
+	}                        //循环后p指向i-1个结点
+	if (!p || j>i)          //插入操作时，第i-1个的结点不存在时
+		return ERROR;
+	q = (LinkList)malloc(sizeof(Node*));  //创建新的结点插入链表
+	q->data = e;
+	q->next = p->next;
+	p->next = q;
+	return OK;
+}
+Status Delete_LinkList(LinkList &L, int i, Elemtype e){
+	LinkList p = L, q;         //P为链表的空结点
+	int j = 1;
+	while (p->next&& j<i){
+		p = p->next;
+		++j;
+	}
+	if (!(p->next)|| j>i)   //删除操作时，第i个的结点不存在时
+		return ERROR;
+	e = p->next->data;
+	q = p->next;
+	p->next = q->next;
+	return OK;
+}
+void show_LinkList(LinkList &L){
+	LinkList p = L->next;         //P为链表的空结点
+	while (p){
+		printf("%d\n", p->data);
+		p = p->next;
+	}
+}
+int main(){
+	LinkList L; int n = 6, i = 2; Elemtype e = 50;
+	Creat_LinkList_Head(L,n);
+	show_LinkList(L);
+	Insert_LinkList(L, i, e);
+	show_LinkList(L);
+	return 0;
+}
