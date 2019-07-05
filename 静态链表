@@ -1,0 +1,98 @@
+#include<iostream>
+#include<stdio.h>
+#include<stdlib.h>
+#include<string>
+#define ERROR 0
+#define OK 1
+#define MAXSIZE 1000
+typedef int Status;
+typedef int Elemtype;
+typedef struct{
+	Elemtype data;
+	int curr;
+}component,staticLinkList[MAXSIZE];  //静态链表为一个联合数组
+Status Init_staticlist(staticLinkList &L){
+	Elemtype item; int i = 0,j = 1;
+	for (int i = 0; i < MAXSIZE - 1; i++)
+		L[i].curr = i + 1;        //初始化每个游标：
+	L[0].data = 0;
+	L[MAXSIZE - 1].curr = 1;  //L最后一个元素游标指向存在第一个元素的空间
+	printf("请输入静态链表内容\n");
+   while (std::cin >> item && j < MAXSIZE)
+		{
+	         L[j].data = item;            
+			 L[0].curr = L[j].curr;       //数组第一个元素0处的curr表示下一个要赋值的游标；
+			 ++j;
+		}
+        L[j-1].curr = 0;    //数组最后一个赋值元素的游标为0；
+		return OK;
+}
+int ListLength(staticLinkList &L){
+	int j = 0;     //计数
+	int i = L[MAXSIZE-1].curr;  //第一个元素的位置
+	while (i){
+		i = L[i].curr;      
+		j++;
+	}
+	return j;
+}
+//静态链表插入操作
+int Malloc_SLL(staticLinkList &L){
+	int i = L[0].curr;   
+	if (L[0].curr){     //非空数组
+		L[0].curr = L[i].curr;   //更新下一个要赋值的游标为i指向的下一个数组下标
+	}
+	return i;
+}
+Status Insert_staticLinkList(staticLinkList &L, int i, Elemtype e){
+	int j, k, l;
+	if (i < 1 || i>ListLength(L))
+		return ERROR;
+	k = MAXSIZE - 1;
+	j = Malloc_SLL(L);  //得到下一个要更新的数据位置
+	if (j){                 //非空数组
+		for (l = 1; l < i; l++)
+			k = L[k].curr;         //找到第i-1的数据位置
+		L[j].data = e;
+		L[j].curr = L[k].curr;     //j所处位置的游标指向插入位置i；i-1位置处的游标指向j
+		L[k].curr = j;
+	}
+	return OK;
+}
+//k重新成为要赋值的地点，k连接删除之前要赋值的下标
+void Free_SLL(staticLinkList &L, int k){  //k为被删除的下标值
+	L[k].curr = L[0].curr;
+	L[0].curr = k;
+}
+//删除第i个元素;不一定按顺序存储：即i对应的下标不一定为i
+Status Delete_staticLinkList(staticLinkList &L, int i, Elemtype e){  
+	int j,k, l;
+	if (i < 1 || i>ListLength(L))
+		return ERROR;
+	k = MAXSIZE - 1;
+	for (l = 1; l < i; l++)
+		k = L[k].curr;
+	j = L[k].curr; //第i个元素的下标
+	L[k].curr = L[j].curr;
+	Free_SLL(L, i);
+	return OK;
+}
+void show_staticLinkList(staticLinkList &L){
+	int k = MAXSIZE - 1;
+	for (int l = 0; l < ListLength(L); l++){
+		k = L[k].curr;
+		printf("%d\n", L[k].data);
+	}
+}
+int main(){
+	int i = 3;
+	staticLinkList L;
+	Init_staticlist(L);
+	show_staticLinkList(L);
+	int e = 3;
+	//Insert_staticLinkList(L, i, e);
+	//show_staticLinkList(L);
+	Delete_staticLinkList(L, 2, e);
+	show_staticLinkList(L);
+	return 0;
+}
