@@ -90,6 +90,7 @@ Status Delete_LinkList(LinkList &L, int i, Elemtype e){
 	e = p->next->data;
 	q = p->next;
 	p->next = q->next;
+        free(q);
 	return OK;
 }
 void show_LinkList(LinkList &L){
