@@ -29,13 +29,13 @@ Status Creat_LinkList_Head(LinkList &L,const int n){
 }
 Status Creat_LinkList_Tail(LinkList &L, const int n){
 	L = (LinkList)malloc(sizeof(Node));
-	LinkList r = L,p;
+	LinkList r = L,p;    
 	srand(time(0));
 	for (int i = 0; i < n; i++){
 		p = (LinkList)malloc(sizeof(Node));  
 		p->data = rand() % 100 + 1;  //随机生成100以内的数字;要取得[a,b)的随机整数，使用(rand() % (b-a))+ a 
 		r->next = p;
-		r = p;
+		r = p;      //r没有分配新地址,r与p同地址每个值均相同
 	}
 	r->next = NULL;
 	return OK;
