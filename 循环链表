@@ -1,0 +1,51 @@
+#include<iostream>
+#include<stdio.h>
+#include<stdlib.h>
+#include<time.h>
+#define ERROR 0;
+#define OK 1;
+typedef int Elemtype;
+typedef int Status;
+typedef struct Node{
+	Elemtype data;
+	Node *next;
+	Node *rear; //最后尾针
+}Node;
+typedef Node* LinkList;
+Status Init_LinkList_Tail(LinkList &L,int n){
+	L = (Node*)malloc(sizeof(Node));
+	L->data = n;//头结点存储链表长度
+	LinkList r = L;
+	srand(time(0));
+	for (int i = 0; i < n; i++){
+		LinkList p = (Node*)malloc(sizeof(Node));
+		p->data = rand() % 100 + 1;
+		r->next = p;
+		r = p;
+	}
+	L->rear = r;
+	r->next = L;
+	return OK;
+}
+LinkList Combine_CLL(LinkList &L1, LinkList &L2){
+	L1->rear->next = L2->next;
+	L2->rear->next = L1;
+	free(L2);
+	return L1;
+}
+void show_CLL(LinkList &L){
+	LinkList p = L;
+	while (p->next!= L){
+		p = p->next;
+		printf("%d\n", p->data);
+	}
+}
+int main(){
+	LinkList L1, L2;
+	int n = 5;
+	Init_LinkList_Tail(L1, n);
+	Init_LinkList_Tail(L2, n);
+	LinkList L = Combine_CLL(L1, L2);
+	show_CLL(L);
+	return OK;
+}
