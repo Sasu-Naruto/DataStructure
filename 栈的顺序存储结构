@@ -1,0 +1,56 @@
+#include<iostream>
+#include<stdio.h>
+#include<stdlib.h>
+#define ERROR 0
+#define OK 1
+#define MAXSIZE 100
+typedef int Selemtype;
+typedef int Status;
+typedef struct{
+	Selemtype data[MAXSIZE];
+	int top;
+	int length;
+} Sqstack;
+Status InitStack(Sqstack &s){
+	int item; s.top = -1; s.length = 0;
+	printf("请输入栈的存储内容");
+	while (std::cin >> item &&s.top < MAXSIZE){
+		s.top++;
+		s.data[s.top] = item;
+		s.length++;
+	}
+	return OK;
+}
+Status GetStack(Sqstack &s,int i,Selemtype e){
+	if (i<1 || i>s.length)
+		return ERROR;
+	e = s.data[i - 1];
+	return OK;
+}
+Status Push(Sqstack &s,Selemtype e){
+	if (s.top == MAXSIZE - 1)
+		return ERROR;          //栈满
+	s.data[++s.top] = e;
+	s.length++;
+	return OK;
+}
+Status Pop(Sqstack &s, Selemtype e){
+	if (s.top == -1)
+		return ERROR;
+	e = s.data[s.top];
+	s.top--;
+	return OK;
+}
+void ShowStack(Sqstack &s){
+	for (int j = 0; j < s.length; j++)
+		printf("%d\n", s.data[j]);
+}
+int main(){
+	Sqstack s; Selemtype e = 9;
+	InitStack(s);
+	printf("%d\n",s.length);
+	ShowStack(s);
+	Push(s,e);
+	ShowStack(s);
+	return 0;
+}
