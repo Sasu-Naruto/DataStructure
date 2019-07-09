@@ -1,0 +1,79 @@
+#include<iostream>
+#include<stdio.h>
+#include<stdlib.h>
+#define ERROR 0
+#define OK 1
+#define MAXSIZE 100
+typedef int elemtype;
+typedef int Status;
+typedef struct{
+	elemtype data[MAXSIZE];
+	int top1;
+	int top2;
+}SqDoubleStack;
+void Init_DoubleStack(SqDoubleStack &ds, int stacknum){
+	int item; ds.top1 = -1; ds.top2 = MAXSIZE; //空栈时top为-1；top必须小于stacksize
+	printf("请输入共享空间栈的内容,栈1先初始化请输入1；栈2输入2\n");
+	while (std::cin >> item && ds.top1 + 1 != ds.top2) { //top1+1==top2时表示栈满
+		if (stacknum == 1){
+			ds.top1++;
+			ds.data[ds.top1] = item;
+		}
+		if (stacknum == 2){
+			ds.top2--;
+			ds.data[ds.top2] = item;
+		}
+	}
+}
+Status Push(SqDoubleStack &ds, int stacknum,elemtype e){
+	if (ds.top1 + 1 == ds.top2)
+		return ERROR;
+	if (stacknum == 1){
+		++ds.top1;
+		ds.data[ds.top1] = e;
+	}
+	if (stacknum == 2){
+		ds.top2--;
+		ds.data[ds.top2] = e;
+	}
+	return OK;
+}
+Status Pop(SqDoubleStack &ds, int stacknum, elemtype e){
+	if (stacknum == 1){
+		if (ds.top1 == -1)
+			return ERROR;
+		e = ds.data[ds.top1--];
+	}
+	if (stacknum == 2){
+		if (ds.top2 == MAXSIZE)
+			return OK;
+		e = ds.data[ds.top2++];
+	}
+	return OK;
+}
+Status Show_SqDoubleStack(SqDoubleStack &ds, int stacknum){
+	if (stacknum == 1){
+		if (ds.top1 == -1){
+			printf("此栈为空!");
+			return ERROR;
+		}
+		for (int i = 0; i <= ds.top1; i++)
+			printf("%d\n", ds.data[i]);
+	}
+	if (stacknum == 2){
+		if (ds.top2 == MAXSIZE){
+			printf("此栈为空!");
+			return ERROR;
+		}
+		for (int i = MAXSIZE-1; i >= ds.top2; i--)
+			printf("%d\n", ds.data[i]);
+	}
+	return OK;
+}
+int main(){
+	SqDoubleStack ds; elemtype e = 0;
+	Init_DoubleStack(ds,2);
+	Show_SqDoubleStack(ds,2);
+	Push(ds, 2, 1);
+	Show_SqDoubleStack(ds, 2);
+}
