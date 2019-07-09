@@ -1,0 +1,107 @@
+#include<iostream>
+#include<stdio.h>
+#include<stdlib.h>
+#include<time.h>
+#define ERROR 0
+#define OK 1
+typedef int Elemtype;
+typedef int Status;
+typedef struct StackNode{
+	Elemtype data;
+	struct StackNode* next;
+}StackNode, *LinkStackPtr;  //等价于typedef StackNode* LinkStackPtr;
+typedef struct LinkStack{
+	LinkStackPtr top;  //栈顶放在链式存储结构头部；对于链栈来说不需要头结点;栈顶元素有值
+	int count;
+};
+void Init_LinkStack_Head(LinkStack &Sn,int n){
+	Sn.top = (LinkStackPtr)malloc(sizeof(StackNode));
+	Sn.top->next = NULL;
+	Sn.top->data = rand() % 100 + 1;
+	srand(time(0));
+	LinkStackPtr p,q;
+	for (int i = 0; i < n-1; i++){
+		p = (LinkStackPtr)malloc(sizeof(StackNode));
+		p->data = rand()%100+1;
+		p->next = Sn.top->next;
+		Sn.top->next = p;
+		Sn.count++;
+	}
+}
+void Init_LinkStack_Tail(LinkStack &Sn, int n){
+	Sn.top = (LinkStackPtr)malloc(sizeof(StackNode));
+	Sn.top->next = NULL;
+	srand(time(0));
+	LinkStackPtr p, r = Sn.top;
+	for (int i = 0; i < n-1; i++){
+		p = (LinkStackPtr)malloc(sizeof(StackNode));
+		p->data = rand() % 100 + 1;
+		r->next = p;
+		r = p;
+		Sn.count++;
+	}
+	r->next = NULL;
+}
+void Clear_LinkStack(LinkStack &Sn){
+	LinkStackPtr p, q;
+	p = Sn.top->next;
+	while (p){
+		q = p->next;
+		free(p);
+		p = q;
+	}
+	Sn.top->next = NULL;  //清空链表时，不要忘记头结点指向空指针
+}
+Status StackEmpty(LinkStack &Sn){
+	if (Sn.top)
+		return ERROR;
+	else
+		return OK;
+}
+Status Get_LinkStack(LinkStack &Sn, int i, Elemtype e){
+	int j = 1; LinkStackPtr p = Sn.top->next;  //最终循环得到第i个节点
+	while (p&&j < i){
+		p = p->next;
+		++j;
+	}
+	if (!p || j>i)
+		return ERROR;
+	e = p->data;
+	return OK;
+}
+Status Push(LinkStack &Sn,Elemtype e){  //直接从top处入栈
+	LinkStackPtr p = (LinkStackPtr)malloc(sizeof(StackNode));
+	p->data = e;
+	p->next = Sn.top;
+	Sn.top = p;
+	Sn.count++;
+	return OK;
+}
+Status Pop(LinkStack &Sn, Elemtype &e){  //直接从top处出栈
+	if (StackEmpty(Sn))
+		return ERROR;
+	e = Sn.top->data;
+	LinkStackPtr p = Sn.top;
+	Sn.top = Sn.top->next;
+	free(p);
+	Sn.count--;
+	return OK;
+}
+void show(LinkStack &Sn){
+	LinkStackPtr p = Sn.top;         //P为链表的空结点
+	while (p){
+		printf("%d\n", p->data);
+		p = p->next;
+	}
+}
+int main(){
+	LinkStack Sn; int n = 6, i = 2; Elemtype e = 0;
+	Init_LinkStack_Head(Sn, n);
+	show(Sn);
+	//Push(Sn, e);
+	//show(Sn);
+	Pop(Sn, e);
+	//printf("%d\n", e);
+	show(Sn);
+	return 0;
+}
