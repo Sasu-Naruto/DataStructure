@@ -1,0 +1,60 @@
+#include<iostream>
+#include<stdio.h>
+#include<stdlib.h>
+#define ERROR 0
+#define OK 1
+#define MAXSIZE 5
+typedef int elemtype;
+typedef int Status;
+typedef struct {
+	elemtype data[MAXSIZE];
+	int front;     //指针，也可看做下标
+	int rear;
+}SqQueue;
+Status Init_SqQueue(SqQueue &Q){
+//初始化
+	Q.front = 0;
+	Q.rear = 0;  
+	int item,j = 0;
+	printf("请输入队列元素\n");
+	while (std::cin >> item&& j < MAXSIZE){
+		Q.rear = (Q.rear+1) % MAXSIZE;
+		if ((Q.rear + 1) % MAXSIZE == Q.front){
+			printf("队列已满\n");
+			return ERROR;
+		}
+		Q.data[j] = item;
+		++j;
+	}
+	return OK;
+}
+int SqQueue_Length(SqQueue &Q){
+	return ((Q.rear - Q.front+MAXSIZE) % MAXSIZE);   //rear>front && rear <front(需要加上maxsize) 两种情况
+}
+Status EnQueue(SqQueue &Q,elemtype e){
+	if ((Q.rear + 1) % MAXSIZE == Q.front)  //当还存在一个空闲元素时队列满
+		return ERROR;
+	Q.data[Q.rear] = e;
+	Q.rear = (Q.rear + 1) % MAXSIZE;
+	return OK;
+}
+Status DeQueue(SqQueue &Q, elemtype e){
+	if (Q.front == Q.rear)
+		return OK;
+	e = Q.data[Q.front];
+	Q.front = (Q.front + 1) % MAXSIZE;  //删除元素后头指针向后挪动一位
+	return OK;
+}
+void show(SqQueue &Q){
+	if (Q.front == Q.rear)
+		printf("队列为空！");
+	for (int i = 0; i < Q.rear; i++)
+		printf("%d\n", Q.data[i]);
+}
+int main(){
+	SqQueue Q;
+	Init_SqQueue(Q);
+	show(Q);
+	printf("%d\n", EnQueue(Q, 0));
+	return OK;
+}
