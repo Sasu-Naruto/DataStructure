@@ -46,9 +46,9 @@ Status DeQueue(LinkQueue &L, elemtype &e){
 	if (L.front == L.rear)
 		return ERROR;
 	Qnode p = L.front->next;
-	if (p == L.rear)
-		L.front->next = NULL;
 	L.front->next = p->next;
+	if (p == L.rear)
+		L.rear= L.front;  //若队尾被删除，则rear指针指向头结点
 	free(p);
 	return OK;
 }
