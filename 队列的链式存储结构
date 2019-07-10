@@ -1,0 +1,71 @@
+#include<iostream>
+#include<stdio.h>
+#include<stdlib.h>
+#include<time.h>
+#define ERROR 0
+#define OK 1
+#define OVERFLOW 
+typedef int Status;
+typedef int elemtype;
+typedef struct QueueNode{      //定义结点结构
+	elemtype data;
+	struct QueueNode* next;
+}QueueNode,*Qnode;
+typedef struct{
+	Qnode front, rear;
+}LinkQueue;
+Status Init_LinkQueue(LinkQueue &L,int n){
+	L.front = (Qnode)malloc(sizeof(QueueNode));  //创建头结点为front
+	L.front->data = n;   
+	L.front->next = NULL;
+	L.rear = L.front;
+	srand(time(0));
+	int i = 0; Qnode p,r=L.front;
+	for (int i = 0; i < n; i++){
+		p = (Qnode)malloc(sizeof(QueueNode));
+		p->data = rand() % 100 + 1;
+		r->next = p;
+		r = p;
+	}
+	L.rear = r;
+	r->next = NULL;
+	return OK;
+}
+Status EnQueue(LinkQueue &L,elemtype e){
+	Qnode p = (Qnode)malloc(sizeof(QueueNode));
+	if (!p)
+		return ERROR;
+	p->data = e;
+	p->next = NULL;
+	L.rear->next = p;
+	L.rear = p;
+	return OK;
+}
+Status DeQueue(LinkQueue &L, elemtype &e){
+	e = L.front->data;
+	if (L.front == L.rear)
+		return ERROR;
+	Qnode p = L.front->next;
+	if (p == L.rear)
+		L.front->next = NULL;
+	L.front->next = p->next;
+	free(p);
+	return OK;
+}
+void show(LinkQueue &L){
+	Qnode p = L.front->next;
+	while (p){
+		printf("%d\n", p->data);
+		p = p->next;
+	}
+}
+int main(){
+	LinkQueue L; int n = 5,e = 0;
+	Init_LinkQueue(L, 5);
+	show(L);
+	//EnQueue(L, 0);
+	//show(L);
+	DeQueue(L, e);
+	show(L);
+	return 0;
+}
