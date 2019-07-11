@@ -1,0 +1,52 @@
+#include<iostream>
+#include<stdio.h>
+#include<stdlib.h>
+#define ERROR 0
+#define OK 1
+#define MAXSIZE 100
+typedef int elemtype;
+typedef int Status;
+typedef struct {
+	char *symbol;
+	int length;
+}String;
+//Status StrAssign(String &s,char* word){
+//	int i = 1,j = 0; 
+//	s.length = 0;
+//	while (word[j]&&i < MAXSIZE){
+//		s.symbol[i] = word[j];
+//		i++;
+//		j++;
+//		s.length++;
+//	}
+//	s.symbol[0] = s.length;
+//	return OK;
+//}
+Status StrAssign(String &s, char*word){
+	//if (s.symbol)
+		//free(s.symbol); //清空原有空间
+	int n = 0,j = 0;
+	while (word[n])
+		++n;
+	if (s.symbol = (char*)malloc(n*sizeof(char)))
+		exit(OVERFLOW);//也可用new,分配空间资源
+	for (int i = 1; i < n; i++){
+		s.symbol[i] = word[j];
+		j++;
+		s.length++;
+	}
+	s.symbol[0] = s.length;
+	return OK;
+}
+void show(String &s){
+	for (int i = 1; i <= s.length; i++)
+		printf("%c\n", s.symbol[i]);
+}
+
+int main(){
+	String s;
+	char word[] = "hello world";
+	StrAssign(s, word);
+	show(s);
+	return 0;
+}
