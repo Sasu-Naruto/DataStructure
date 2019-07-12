@@ -1,0 +1,93 @@
+#include<stdio.h>
+#include<stdlib.h>
+#include<iostream>
+typedef struct String{
+	struct String() :ch(NULL), length(0){};  //初始化
+	char *ch;
+	int length;
+}String;
+bool StrAssign(String &s, char*ch){
+	int n = 0;
+	if (s.ch)
+		free(s.ch);
+	while (ch[n]){ ++n; }//得到ch的长度
+	s.ch = (char*)malloc(n *sizeof(char));
+	if (!s.ch)
+		exit(OVERFLOW);
+	for (int i = 0; i < n; ++i)
+		s.ch[i] = ch[i];
+	s.length = n;  //字符串长度不包含结束符
+	return true;
+}
+/////////////////////////////////////////////////BP模式匹配识别/////////////////////////////////////////////
+int Index_BP(String &s, String &t, int pos){
+	int i = pos, j = 0;
+	while (i < s.length&&j < t.length){
+		if (s.ch[i] == t.ch[j]){
+			++i;
+			++j;
+		}
+		else{
+			i = i - j + 1;
+			j = 0;
+		}
+	}
+	if (j==t.length)
+		return i-j+1;
+	else
+		return 0;
+}
+//////////////////////////////////////////////KMP模式匹配识别/////////////////////////////////////////////
+void get_next(String &t, int *next){      //在匹配过程中仅改变子串的位置;考虑从0~j-1位的前缀后缀是否相等
+	int i = 0, j = -1;
+	next[0] = -1;
+	while (i<t.length){
+		if (j==-1||t.ch[i] == t.ch[j]){   //t.ch[i]表示后缀字符；t.ch[j]表示前缀字符
+			++i; ++j;
+			next[i] = j;
+		}
+		else
+			 j= next[j];
+	}
+}
+//////////////////////////////////////////KMP模式识别算法改进////////////////////////////////////////////
+void get_nextval(String &t, int *next){
+	int i = 0, j = -1;
+	next[0] = -1;
+	while (i < t.length){
+		if (j == -1 || t.ch[i] == t.ch[j]){
+			++i; ++j;
+			if (t.ch[i] != t.ch[j])  //当前字符与前缀字符不相等
+				next[i] = j;
+			else
+				next[i] = next[j];
+		}
+		else
+		j = next[j];
+	}
+}
+////////////////////////////////模式匹配实现////////////////////////////////
+int Index_KMP(String &s, String &t, int pos){
+	int i = pos - 1, j = -1;
+	int next[255]; get_nextval(t, next);
+	while (i < s.length&&j < t.length){
+		if (j == -1 || s.ch[i] == t.ch[j]){
+			++i; ++j;
+		}
+		else
+			j = next[j];
+	}
+	if (j == t.length)
+		return i - j + 1;
+	else
+		return 0;
+}
+int main(){
+	String s, t; int pos = 2;
+	char* ch1 = "helloworld", *ch2 = "world";
+	StrAssign(s, ch1);
+	StrAssign(t, ch2);
+	//Index_KMP(s, t, 2);
+	printf("%d\n",Index_KMP(s, t, 2));
+	return 0;
+}
