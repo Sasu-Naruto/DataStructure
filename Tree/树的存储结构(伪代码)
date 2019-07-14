@@ -1,0 +1,38 @@
+#define MAX_TREE_SIZE 100
+typedef int elemtype;
+typedef int Status;
+//树由结点数组表示，表示方法的不同即为结点的构造不同
+//双亲表示法：每个结点包含数据域+指针域指向双亲
+typedef struct PTNODE{
+	elemtype data;
+	struct PTNODE *parent;
+}PTNODE;                   //结点定义
+typedef struct {
+	PTNODE nodes[MAX_TREE_SIZE];   //树是结点组成的数组；
+	int r, n;  //根的位子和结点数
+}PTree;
+//孩子表示法：每个结点的孩子结点排列起来，以单链表作为存储结构；n个头指针组成顺序存储结构。
+//首次构造两种结点：一种孩子链表，包含数据域和指向下一个孩子结点的指针域；
+//一种是表头数组的表头结点，包含数据域和指向孩子链表的头指针域；
+//两个结点最终构成一棵树;
+typedef struct CTNODE{
+	elemtype child;
+	CTNODE *next;            //构造孩子链表
+}CTNODE,*childptr;
+typedef struct {
+	elemtype data;
+	childptr firstchild;
+}CTBOX;                      //构造表头链表,包含所有结点
+typedef struct{
+	CTBOX node[MAX_TREE_SIZE];
+	int t, n;
+}CTree;
+//孩子兄弟表示法:一个结点包含一个数据域和两个指针域：分别指向第一个孩子和此节点的右兄弟
+typedef struct CSNODE{
+	elemtype data;
+	CSNODE *firstchild, *rightsib;
+}CSNODE;
+typedef struct{
+	CSNODE data[MAX_TREE_SIZE];
+	int r, n;
+}CSTree;
