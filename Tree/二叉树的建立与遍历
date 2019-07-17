@@ -2,41 +2,100 @@
 #include<iostream>
 #include<stdio.h>
 #include<stdlib.h>
-typedef char elemtype;
-typedef struct BitNode{
-	elemtype data;
-	struct BitNode *lchild, *rchild;
-}BitNode,*BiTree;
-//创建二叉树,二叉链表结构
-void Creat_BiTree(BiTree &T){
-	elemtype ch = 0;
-	std::cin >> ch; //函数的递归会使得输入出现多次，不需要循环
-	if (ch == '#')
-			T = NULL;
-		else{
-			T = (BitNode*)malloc(sizeof(BitNode));  //创建新的结点
-			if (!T)
-				exit(OVERFLOW);
-			T->data = ch;
-			Creat_BiTree(T->lchild);
-			Creat_BiTree(T->rchild);
-	    }
+typedef struct BTnode{
+	char data;
+	BTnode *lchild, *rchild;
+}BTnode,*BiTree;
+//栈，树的非递归遍历
+typedef struct StackNode{
+	BiTree tree;
+	StackNode *next;
+}StackNode,*StackLink;
+void Init_stack(StackLink &L){                 //初始化栈
+	L = (StackLink)malloc(sizeof(StackNode));
+	L = NULL;
 }
-//二叉树的前序遍历
+void push(StackLink &L, BiTree &T){                 //L为头结点,top
+	StackLink p = (StackLink)malloc(sizeof(StackNode));
+	if (!p)
+		exit(OVERFLOW);
+	p->tree = T;
+	p->next = L;
+	L = p;
+}
+void pop(StackLink &L, BiTree &T){
+	if (L == NULL)
+		printf("树已为空!");
+	T = L->tree;
+	StackLink p = L;
+	L = L->next;
+	free(p);
+}
+bool StaEmpty(StackLink L){
+	if (L== NULL)
+		return true;
+	return false;
+}
+void creat_BT(BiTree &T){              //二叉树的创建
+	char ch;
+	std::cin >> ch;
+	if (ch == '#')
+		T = NULL;
+	else{
+		T = (BiTree)malloc(sizeof(BTnode));  //若T有值则分配内存给新结点
+		if (!T)
+			exit(OVERFLOW);
+		T->data = ch;
+		creat_BT(T->lchild);
+		creat_BT(T->rchild);
+	}
+}
 void PreOrder(BiTree &T){
 	if (T == NULL)
-		return;        //若树为空则返回,使得递归结束
+		return;
 	printf("%c", T->data);
 	PreOrder(T->lchild);
 	PreOrder(T->rchild);
 }
-//中序遍历
+void PreOrder_stack(BiTree &T){
+	StackLink L;
+	BiTree p = T;
+	Init_stack(L);
+	while (p != NULL || !StaEmpty(L)){
+		while (p != NULL){
+			push(L, p);
+			std::cout << p->data;
+			p = p->lchild;
+		}
+		if(!StaEmpty(L)){            //判断语句，取到右结点后输出
+			pop(L, p);
+			p = p->rchild;
+		}
+	}
+}
 void InOrder(BiTree &T){
 	if (T == NULL)
 		return;
 	InOrder(T->lchild);
 	printf("%c", T->data);
 	InOrder(T->rchild);
+}
+void InOrder_stack(BiTree &T){
+	StackLink L;
+	BiTree p = T;
+	Init_stack(L);
+	while (p!=NULL||!StaEmpty(L))
+	{
+		while (p != NULL){                //将根结点入栈，与左子树根节点入栈
+			push(L, p);           
+			p = p->lchild;
+		}
+	    if(!StaEmpty(L)){
+			pop(L, p);                    //弹出左子树的根节点输出并取得右子树
+			std::cout << p->data;
+			p = p->rchild;
+		}
+	}
 }
 void PostOrder(BiTree &T){
 	if (T == NULL)
@@ -45,14 +104,17 @@ void PostOrder(BiTree &T){
 	PostOrder(T->rchild);
 	printf("%c", T->data);
 }
+void PostOrder_stack(BiTree &T){
+
+}
 int main(){
-	BiTree T = NULL ;
-	Creat_BiTree(T);
-    PreOrder(T);
-	printf("\n");
-	InOrder(T);
-	printf("\n");
-	PostOrder(T);
-	printf("\n");
+	BiTree T = NULL;
+	creat_BT(T);
+	PreOrder(T);printf("\n");
+	PreOrder_stack(T);	printf("\n");
+	InOrder(T);	printf("\n");
+	InOrder_stack(T); printf("\n");
+	PostOrder(T); printf("\n");
 	return 0;
 }
+
