@@ -1,0 +1,78 @@
+#include<iostream>
+#include<stdio.h>
+#include<stdlib.h>
+typedef struct BitNode{
+	char data;
+	BitNode *lchild, *rchild;
+}BitNode,*BiTree;
+typedef struct QueueNode{
+	BiTree tree;
+	QueueNode *next;
+}QueueNode, *Qnode;
+typedef struct {
+	Qnode front;
+	Qnode rear;
+}LinkQueue;
+void Init_Q(LinkQueue &q){
+	q.front = (Qnode)malloc(sizeof(QueueNode));  //创建头结点,Q.front为头结点不保存数据；Q.rear则保存数据
+	q.front->tree = NULL;
+	q.front->next = NULL;
+	q.rear = q.front;
+}
+void EnQueue(LinkQueue &Q, BiTree &t){
+	Qnode p = (Qnode)malloc(sizeof(QueueNode));
+	if (!p)
+		exit(OVERFLOW);
+	p->tree = t;
+	p->next = NULL;
+	Q.rear->next = p;
+	Q.rear = p;
+}
+void OutQueue(LinkQueue &Q, BiTree &t){
+	if (Q.front == Q.rear)
+		printf("此队列为空！");
+	t = Q.front->next->tree;
+	Qnode p = Q.front->next;
+	Q.front->next = p->next;
+	if (p == Q.rear)
+		Q.front = Q.rear;
+	free(p);
+}
+bool IsEmpty(LinkQueue &Q){
+	if (Q.front == Q.rear)
+		return true;
+	return false;
+}
+void creat_tree(BiTree &T){
+	char ch;
+	std::cin >> ch;
+	if (ch == '#')
+		T = NULL;
+	else
+	{
+		T = (BiTree)malloc(sizeof(BitNode));
+		if (!T) exit(OVERFLOW);
+		T->data = ch;
+		creat_tree(T->lchild);
+		creat_tree(T->rchild);
+	}
+}
+void LevelOrder(BiTree &T){
+	LinkQueue Q; BiTree p = T;
+	Init_Q(Q);
+	EnQueue(Q, p);
+	while (Q.rear != Q.front){
+		OutQueue(Q, p);
+		std::cout << p->data;
+		if (p->lchild != NULL)
+			EnQueue(Q, p->lchild);
+		if (p->rchild != NULL)
+			EnQueue(Q, p->rchild);
+	}
+}
+int main(){
+	BiTree T;
+	creat_tree(T);
+	LevelOrder(T);
+	return 0;
+}
