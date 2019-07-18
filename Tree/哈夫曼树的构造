@@ -1,1 +1,65 @@
-
+///////////////////////////////////////////////哈夫曼树构造步骤////////////////////////////////////////////////////////////////////
+//(1)以权值分别为W1,W2．．．Ｗｎ的ｎ各结点，构成n棵二叉树T1,T2,．．．Tn并组成森林F={T1,T2,．．．Tn},其中每棵二叉树 Ti仅有一个权值为 Wi的根结点；
+//(2)在F中选取两棵根结点权值最小的树作为左右子树构造一棵新二叉树，并且置新二叉树根结点权值为左右子树上根结点的权值之和
+//（根结点的权值=左右孩子权值之和，叶结点的权值= Wi）；
+//(3)从F中删除这两棵二叉树，同时将新二叉树加入到F中;
+//(4)重复(2)、(3)直到F中只含一棵二叉树为止，这棵二叉树就是Huffman树。
+#include<iostream>
+#include<stdio.h>
+#include<stdlib.h>
+#include<iomanip>       //声明‘流操作符’
+//setprecision(int) 设置浮点数的精确度
+typedef struct {
+	int weight;
+	int lchild, rchild, parent;
+}element;
+//选取权值最小的两个点
+void selectMin(element a[], int n, int &s1, int &s2){
+	int smallest = 255, smaller = 255;    //smallest及smaller可以设置为叶子结点权值的总和
+	for (int i = 0; i < n; i++){
+		if (a[i].parent != -1)              //初始化s1,确保s1的双亲为-1；
+			continue;
+		if (a[i].weight < smallest) {         //选取最小值
+			s2 = s1;
+			s1 = i;
+			smaller = smallest;
+			smallest = a[i].weight;
+		}
+		else if (a[i].weight < smaller){
+			smaller = a[i].weight;
+			s2 = i;
+		}
+	}
+}
+void HuffmanTree(element hufftree[], int w[], int n){  
+	// 将每个结点的孩子父母初始化为-1,总共有2*n-1个结点
+	// 并给叶子结点赋权值
+	for (int i = 0; i < 2 * n - 1; i++){
+		if(i<n)
+			hufftree[i].weight = w[i];  
+		hufftree[i].parent = -1;
+		hufftree[i].lchild = -1;
+		hufftree[i].rchild = -1;
+	}
+	for (int k = n; k < 2 * n - 1; k++){   //n-1次合并,除n个叶子结点(0~n-1)后产生新的结点
+		int i1 = 0, i2 = 0 ;
+		selectMin(hufftree, k, i1, i2);    //选择权值最小两个的结点之和作为新结点
+		hufftree[i1].parent = k;
+		hufftree[i2].parent = k;
+		hufftree[k].lchild = i1;
+		hufftree[k].rchild = i2;
+		hufftree[k].weight = hufftree[i1].weight + hufftree[i2].weight;  
+	}
+}
+void print(element ht[], int m){            //哈弗曼树变为2*n-1个结点
+	for (int i = 0; i < m; ++i)
+		std::cout << ht[i].weight << " ";
+}
+int main(){
+	int x[] = {5,29,7,8,14,23,3,11};
+	element *hufftree = new element[2 * 8 - 1];
+	HuffmanTree(hufftree, x, 8);
+	print(hufftree,15);
+	system("pause");
+	return 0;
+}
