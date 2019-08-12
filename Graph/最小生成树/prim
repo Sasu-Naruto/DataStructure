@@ -1,0 +1,30 @@
+void MiniSpanTree_prim(Mgraph &G){
+	int min;
+	int adjvex[MAXVEX];   //保存顶点下标
+	int lowcost[MAXVEX];  
+	lowcost[0] = 0;    //坐标表示顶点，数组值表示权值;起始坐标点为0
+	adjvex[0] = 0;     //起始坐标点为0
+	for (int i = 1; i < G.numvex; i++){
+		lowcost[i] = G.arc[0][i];
+		adjvex[i] = 0; 
+	}
+	for (int i = 1; i < G.numvex; i++){
+		min = MAX;
+		int j = 1, k = 0;
+		while (j < G.numvex){            
+			if (lowcost[j] != 0 && lowcost[j] < min){          
+				min = lowcost[j];
+				k = j;     //查找起始点权值最小的边，得到其终点赋值为k
+			}
+			j++;
+		}
+		printf("(%d,%d)", adjvex[k], k);  //输出第一条边，adjvex[k]为起点，k为终点
+		lowcost[k] = 0;   //将该点权值设为0表示已经顶点已经在生成树中
+		for (int j = 1; j < G.numvex; j++){
+			if (lowcost[j] != 0 && G.arc[k][j] < lowcost[j]){
+				lowcost[j] = G.arc[k][j];
+				adjvex[j] = k;  //更新该位置的起点
+			}
+		}
+	}
+}
