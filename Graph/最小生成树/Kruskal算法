@@ -1,0 +1,48 @@
+typedef struct{
+	int begin;
+	int end;
+	int weight;
+}Edge;
+//邻接矩阵转换为边集数组
+void ChangeAdjMatrix(Edge edges[],Mgraph &G){
+	int k = 0;
+	for (int i = 0; i < G.numvex; i++){
+		for (int j = 0; j < G.numvex-i; j++){
+			if (G.arc[i][j] != 0 && G.arc[i][j] != MAX){
+				edges[k].begin = i;
+				edges[k].end = j;
+				edges[k].weight = G.arc[i][j];
+				k++;
+			}
+		}
+	}
+	for (int i = 0; i < G.numedge; i++)
+	    for (int j = i + 1; j < G.numedge; j++){
+			if (edges[j].weight < edges[i].weight){
+				Edge min;
+				min = edges[i]; edges[i] = edges[j]; edges[j] = min;
+			}
+	}    //冒泡排序法
+}
+//Krustal算法
+int Find(int *parent,int f){
+	while (parent[f]>0)   //已经加入生成树的顶点不能再加入
+		f = parent[f];
+	return f;
+}
+void MiniSpanTree_Kruskal(Mgraph &G){
+	int n = 0, m = 1;
+	Edge edges[MAXEDGE];
+	ChangeAdjMatrix(edges, G);
+	int parent[MAXVEX];
+	for (int i = 0; i < G.numvex; i++)
+		parent[i] = 0;
+	for (int i = 0; i < G.numvex; i++){
+		n = Find(parent, edges[i].begin);
+		m = Find(parent, edges[i].end);
+		if (n != m){   //防止形成环路
+			parent[n] = m;   //将该边的结尾m作为起点n的值
+			printf("(%d,%d),%d", edges[i].begin, edges[i].end, edges[i].weight);
+		}
+	}
+}
