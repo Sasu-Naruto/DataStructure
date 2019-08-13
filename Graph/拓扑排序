@@ -1,0 +1,68 @@
+//AOV网：顶点表示活动的网，包含所有顶点不构成回路
+//拓扑排序：解决一个工程能否顺利进行的算法
+//算法思路：工程步骤构成一个AOV网，从AOV网中选取一个入度为0的顶点输出，然后
+//          删除以此顶点为尾(即以该点为初始点)弧，直至输出全部顶点或AOV网中不存在入度为0的顶点为止
+#pragma warning(disable:4996)
+#include<iostream>
+#include<stdlib.h>
+#include<stdio.h>
+# define MAXVEX 100
+typedef struct EdgeNode{
+	int adjvex;
+	struct EdgeNode *next;
+}EdgeNode;
+typedef struct VexNode{
+	int data;  //顶点
+	int in;    //顶点的入度
+	EdgeNode *firstedge;
+}AdjList[MAXVEX];
+typedef struct{
+	AdjList adjlist;
+	int numvex, numedge;
+}GroupAdjList;
+void CreatAdjList(GroupAdjList &G){
+	printf("请输入图的点数和边数\n");
+	scanf("%d%d", &G.numvex, &G.numedge);
+	printf("请输入顶点和入度\n");            //初始化顶点表
+	for (int i = 0; i < G.numvex; i++){
+		scanf("%d%d",&G.adjlist[i].data,&G.adjlist[i].in);
+		G.adjlist[i].firstedge = NULL;
+	}
+	for (int k = 0; k < G.numedge; k++){   //初始化边表
+		int i = 0, j = 0;
+		printf("请输入边（vi，vj）的序号\n");
+		scanf("%d%d", &i,&j);   //输入存在边的序号
+		EdgeNode *p = (EdgeNode*)malloc(sizeof(EdgeNode));
+		p->adjvex = j;
+		p->next = G.adjlist[i].firstedge;      
+		G.adjlist[i].firstedge = p;           //头插法
+	}
+}
+bool TopologicalSort(GroupAdjList &G){
+	int top = 0,gettop = 0;
+	int count = 0;  //计算入度为0的顶点个数
+	int *stack;
+	for (int i = 0; i < G.numvex; i++){
+		if (G.adjlist[i].in == 0)
+			stack[++top] = i;      //栈中存入 入度为0的顶点
+	}
+	while (top != 0){              //栈非空时
+		gettop = stack[top--];     //获取入度为0的顶点
+		count++;
+		printf("%d -> ",G.adjlist[gettop].data);  //变量adjlist中的data才表示顶点
+		for (EdgeNode *e = G.adjlist[gettop].firstedge; e; e = e->next){
+			int k = e->adjvex;        //顶点的邻接点信息
+			if (!(--G.adjlist[k].in == 0))   //邻接点入度-1，若入度变为0则存入栈中
+				stack[++top] = k;
+		}
+	}
+	if (count != G.numvex)
+		return false;
+	else
+		return true;
+}
+int main(){
+	GroupAdjList G;
+	CreatAdjList(G);
+	TopologicalSort(G);
+}
