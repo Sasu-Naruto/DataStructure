@@ -1,0 +1,33 @@
+void ShortPath_Floyd(Mgraph &G,Pathmatrix *P,ShortPathTable *D){
+	for (int i = 0; i < G.numvex; i++){
+		//初始化最短路径P[i][j]和路径权值，P[i][j]值表示到j点的起始点
+		for (int j = 0; j < G.numvex; j++){
+			(*D)[i][j] = G.arc[i][j];
+			(*P)[i][j] = j;
+		}
+	}
+	for (int i = 0; i < G.numvex; i++){
+		for (int j = 0; j < G.numvex; j++){
+			for (int k = 0; k < G.numvex; k++){
+				if ((*D)[j][k] > ((*D)[j][i] + (*D)[i][k])){
+					(*D)[j][k] = (*D)[j][i] + (*D)[i][k];
+					(*P)[j][k] = (*P)[j][i];   //路径设置为经过下标为k的顶点
+				}
+			}
+		}
+	}
+	//最短路径显示代码：
+	for (int v = 0; v < G.numvex;++v){
+		for (int w = v + 1; w < G.numvex; w++){
+			printf("%d -> %d weight : %d", v, w, (*D)[v][w]);
+			int k = (*P)[v][w];   //v到w经过的顶点
+			printf("Path: %d", v);
+			while (k != w){      //路径顶点下标不是终点
+				printf("-> %d", k);
+				k = (*P)[k][w];
+			}
+			printf("-> %d", w);
+		}
+		printf("\n");
+	}
+}
