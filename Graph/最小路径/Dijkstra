@@ -1,0 +1,36 @@
+// Dijkstra求解最小路径算法
+typedef int Patharc[MAXVEX];  //存储最短路径下标
+typedef int ShortPathTable[MAXVEX];  //存储最短路径权值
+void ShortPath_Dijkstra(Mgraph &G, Patharc *P,ShortPathTable *D){
+	//初始化
+	int final[MAXVEX];  //显示是否已为最短路径的状态数组
+	for (int i = 1; i < G.numvex;i++){
+		(*D)[i] = G.arc[0][i];
+		(*P)[i] = 0;
+		final[i] = 0;
+	}
+	(*D)[0] = 0;
+	(*P)[0] = 0;
+	final[0] = 1;
+	//主循环，每次查找到点i的最小路径
+	for (int i = 1; i < G.numvex; i++){  //不包含初始点
+		int min = MAX;
+		int j = 1, k = 0;
+		while (j < G.numvex){        //查找到点0的权值最小边对应的顶点
+			if ((*D)[j] < min && !final[j]){  //不再查找已经求完的顶点
+				min = (*D)[j];
+				k = j;
+			}
+			j++;
+		}
+		final[k] = 1; 
+		for (int j = 0; j < G.numvex; j++){
+			if (!final[j] && min + G.arc[k][j]<(*D)[j]){  //更新最短路径的权值
+				(*D)[j] = min + G.arc[k][j];
+				(*P)[j] = k;   //到该点j的前驱顶点变为k
+			}
+		}
+	}
+	for (int i = 0; i < G.numvex; i++)
+		std::cout << (*P)[i] << std::endl;
+}
