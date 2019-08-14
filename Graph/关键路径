@@ -1,0 +1,111 @@
+//AOE网：顶点表示事件，弧表示活动，权值表示活动的持续时间的网，包含所有顶点不构成回路
+//拓扑排序：解决一个工程顺利进行并用时最短的算法
+//算法思路：工程步骤构成一个AOV网，从AOV网中选取一个入度为0的顶点输出，然后
+//          删除以此顶点为尾(即以该点为初始点)弧，直至输出全部顶点或AOV网中不存在入度为0的顶点为止
+//          得到拓扑排序的事件完成顺序后，依次求解事件最早开始时间etv、事件最晚开始时间lve
+//          活动最早开始时间ete和活动最晚时间lte由etv和lve求得，当二者相等时弧为关键路径
+#pragma warning(disable:4996)
+#include<iostream>
+#include<stdlib.h>
+#include<stdio.h>
+# define MAXVEX 100
+//定义全局变量;
+//拓扑排序结果存储以及事件最早开始时间的数组
+int *stack2 = NULL, *etv = NULL;  
+int top2 = 0;
+typedef struct EdgeNode{
+	int adjvex;
+	int weight;   //弧的权值，表示活动持续时间
+	struct EdgeNode *next;
+}EdgeNode;
+typedef struct {
+	int in;
+	int data;
+	EdgeNode *firstedge;
+}AdjList[MAXVEX];
+typedef struct {
+	AdjList adjlist;
+	int numvex, numedge;
+}GraphAdjList;
+void CreatAdjList(GraphAdjList &G){
+	EdgeNode *e; int i = 0, j = 0,w = 0;
+	//初始化顶点表
+	printf("请输入图的顶点数及其边数\n");
+	scanf("%d%d", &G.numvex, &G.numedge);
+	printf("请输入图的顶点及其入度\n");
+	for (int i = 0; i < G.numvex; i++){
+		scanf("%d%d", &G.adjlist[i].data, &G.adjlist[i].in);
+		G.adjlist[i].firstedge = NULL;
+	}
+	for (int k = 0; k < G.numedge; k++){
+		printf("请输入图(vi,vj)的顶点i，j和权值w\n");
+		scanf("%d%d%d", &i, &j, &w);
+		e = (EdgeNode*)malloc(sizeof(EdgeNode));
+		e->adjvex = j;
+		e->weight = w;
+		e->next = G.adjlist[i].firstedge;
+		G.adjlist[i].firstedge = e;
+	}
+}
+bool TopologicalSort(GraphAdjList &G){
+	int stack[MAXVEX];  //指针要先初始化,否则会存在野指针
+	int top = 0, gettop = 0;
+	int count = 0;
+	etv = (int*)malloc(G.numvex*sizeof(int));
+	stack2 = (int*)malloc(G.numvex*sizeof(int));
+	for (int i = 0; i < G.numvex; i++){
+		if (G.adjlist[i].in == 0)
+			stack[++top] = i;
+		etv[i] = 0;
+	}
+	while (top != 0){
+		gettop = stack[top--];
+		// printf("%d ->", G.adjlist[gettop].data);
+		stack2[++top2] = gettop;   //存储拓扑排序结果
+		count++;
+		for (EdgeNode *e = G.adjlist[gettop].firstedge; e; e = e->next){
+			int k = e->adjvex;  //邻接点
+			if (--G.adjlist[k].in == 0)
+				stack[++top] = k;
+			//求解事件最早开始时间
+			if (etv[gettop] + e->weight > etv[k])
+				etv[k] = etv[gettop] + e->weight;
+		}
+	}
+	if (count == G.numvex)
+		return true;
+	else
+		return false;
+}
+void CriticalPath(GraphAdjList &G){
+	int *ltv;    //事件最晚发生时间
+	int ete, lte;  //活动最早发生时间和活动最晚发生时间
+	int gettop;
+	ltv = (int*)malloc(G.numvex*sizeof(int));
+	TopologicalSort(G);
+	for (int i = 0; i < G.numvex; i++)   //初始化ltv
+		ltv[i] = etv[G.numvex -1];
+	while (top2 != 0){
+		gettop = stack2[top2--];
+		for (EdgeNode *e = G.adjlist[gettop].firstedge; e; e = e->next){
+			int k = e->adjvex;
+			if (ltv[k] - e->weight < ltv[gettop])  //gettop为当前事件，k为gettop后要完成的事件
+				ltv[gettop] = ltv[k] - e->weight;  //当前事件最晚发生时间应小于下一个事件最晚时间-活动持续时间
+		}
+	}
+	for (int i = 0; i < G.numvex; i++){
+		//求解ete、lte
+		for (EdgeNode *e = G.adjlist[i].firstedge; e; e = e->next){
+			int k = e->adjvex;
+			ete = etv[i];
+			lte = ltv[k] - e->weight;
+			if (ete == lte)
+				printf("<%d,%d> %d", G.adjlist[i].data, G.adjlist[k].data, e->weight);
+		}
+	}
+}
+int main(){
+	GraphAdjList G;
+	CreatAdjList(G);
+	CriticalPath(G);
+}
