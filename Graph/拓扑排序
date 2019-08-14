@@ -41,7 +41,8 @@ void CreatAdjList(GroupAdjList &G){
 bool TopologicalSort(GroupAdjList &G){
 	int top = 0,gettop = 0;
 	int count = 0;  //计算入度为0的顶点个数
-	int *stack;
+	int *stack = NULL;
+	stack = (int*)malloc(G.numvex*sizeof(int));
 	for (int i = 0; i < G.numvex; i++){
 		if (G.adjlist[i].in == 0)
 			stack[++top] = i;      //栈中存入 入度为0的顶点
