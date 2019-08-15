@@ -1,0 +1,35 @@
+//按照黄金分割来进行实现的
+//F[list.length]是斐波那契数列，为全局变量
+
+int F[10] = {0,1,1,2,3,5,8,13,21,34};
+bool Fibonacci_Search(SqList &list,int key){
+	int low = 0, high = list.length - 1, mid = 0;
+	int k = 0;
+	while (list.length>F[k] - 1)
+		k++;
+	for (int i = list.length; i < F[k] ; i++)
+		list.data[i] = list.data[list.length-1];  //补全顺序表元素个数至斐波那契数列
+	while (low <= high){
+		mid = low + F[k-1]-1;  //mid的初始位置
+		if (list.data[mid] > key){
+			high = mid - 1 ;
+			k = k - 1;
+		}
+		else if (list.data[mid] < key){
+			low= mid + 1;
+			k = k - 2;
+		}
+		else{
+			if (mid < list.length){
+				printf("元素位置为：%d\n",mid+1);
+				return true;
+			}
+			else{
+				printf("元素位置为：%d\n", list.length);
+				return true;
+			}
+		}
+	}
+	printf("元素未找到！\n");
+	return false;
+}
