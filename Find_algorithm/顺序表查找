@@ -1,0 +1,72 @@
+#include<iostream>
+#include<stdio.h>
+#include<stdlib.h>
+#define MAXTole 100
+typedef int DataType;
+typedef struct{
+	DataType *data ;   //声明
+	int length;
+}SqList;
+void Init_SqList(SqList &list){
+	list.data = NULL;
+	list.data = (DataType*)malloc(MAXTole*sizeof(DataType));
+	DataType item; int n = 0;
+	printf("请输入顺序表中元素\n");
+	while (std::cin >> item){
+		list.data[n] = item;
+		n++;
+	}
+	list.length = n;
+}
+bool Insert_SqList(SqList &list, int i, DataType e){
+	if (i < 0 || i>list.length){
+		printf("插入位置错误！");
+			return false;
+	}
+	list.length++;
+	for (int k = list.length - 1; k > i - 1; k--)  //插入时数组更新需要数组数字从最后逐渐往前移动
+		list.data[k] = list.data[k - 1];
+	list.data[i - 1] = e;
+	return true;
+}
+bool Delete_SqList(SqList &list, int i, DataType e){
+	if (i < 0 || i>list.length){
+		printf("删除位置错误！");
+		return false;
+	}
+	e = list.data[i - 1];
+	for (int k = i ; k < list.length; k++)  ////输出时数组更新需要数组数字从开始逐渐往后移动
+		list.data[k - 1] = list.data[k];
+	list.length--;
+	return true;
+}
+bool Find_Sqlist(SqList &list,DataType key){
+	int flag = 0;
+	for (int i = 0; i < list.length; i++){
+		if (list.data[i] == key){
+			printf("数据已找到，在表中序号为 %d \n", i+1);
+			flag = 1;
+			return true;
+		}
+	}
+	if (flag == 0){
+		printf("数据未找到！\n");
+		return false;
+	}
+}
+void show(SqList &list){
+	for (int i = 0; i < list.length; i++)
+		std::cout << list.data[i];
+	std::cout << std::endl;
+}
+int main(){
+	int i = 3, n = 2, key = 5;
+	int e = 5;
+	SqList list;
+	Init_SqList(list);
+	Insert_SqList(list, i, e);
+	show(list);
+	Delete_SqList(list, n, e);
+	show(list);
+	Find_Sqlist(list, key);
+}
