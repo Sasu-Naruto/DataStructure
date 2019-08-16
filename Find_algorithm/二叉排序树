@@ -1,0 +1,98 @@
+#include<iostream>
+#include<stdlib.h>
+#include<stdio.h>
+typedef struct BitNode{
+	int data;
+	struct BitNode* lchild,*rchild;
+}BitNode,*BitTree;
+bool SearchBST(BitTree &T,int key,BitTree f,BitTree *p){
+// 递归查找二叉排序树T中是否存在key；f指向T的双亲，初始值为NULL
+	if (!T){
+		*p = f;   //若未找到key返回查询的最后一个结点
+		return false;
+	}
+	else if (T->data == key){
+		*p = T;   // 当找到key时，p返回该节点
+		return true;
+	}
+	else if (key < T->data)
+		SearchBST(T->lchild, key, T, p);  //递归函数时，参数f=T即为正在查询结点的双亲
+	else
+		SearchBST(T->rchild, key, T, p);
+}
+// 若不存在关键字key，则插入key
+bool InsertBST(BitTree &T, int key){
+	BitTree p, s;
+	if (!SearchBST(T, key,NULL,&p)){                  //查找函数f初始值为NULL
+		s = (BitTree)malloc(sizeof(BitNode));         //给新建结点分配内存,先创建一个子树
+		s->data = key;
+		s->lchild = s->rchild = NULL;      
+//插入时只需要考虑查找后返回的结点值
+		if (!p){
+			T = s;        //若p为空则T为空；插入s为根结点
+		}
+		else if (key < p->data)
+			p->lchild = s;
+		else
+			p->rchild = s;
+	}
+	else{
+		printf("树中已存在该关键字！\n");
+		return false;
+	}
+}
+//类似于查找函数，即找到关键字后进行删除
+bool Delete(BitTree T){
+	BitTree p, s;
+	if (T->rchild == NULL){
+		p = T; T = T->lchild; free(p);
+	}
+	else if (T->lchild == NULL){
+		p = T; T = T->rchild; free(p);
+	}
+	else{
+		//若删除结点既有左子树，又有右子树则只需找到该结点的前驱来代替该结点；
+		p = T; s = T->lchild;
+		while (s->rchild){
+			p = s; s = s->rchild;           //s为结点T左子树的右子树尽头，即前驱结点；p为前驱结点的双亲
+		}
+		T->data = s->data;
+		if (p != T)
+			p->rchild = s->lchild;          //s双亲结点的右孩子将变为s的左孩子
+		else
+			p->lchild = s->lchild;
+		free(s);
+	}
+	return true;
+}
+bool DeleteBST(BitTree &T, int key){
+	if (!T){
+		printf("树中不存在关键字\n");
+		return false;
+	}
+	if (key == T->data){
+		return Delete(T);
+	}
+	else if (key < T->data)
+		DeleteBST(T->lchild, key);
+	else
+		DeleteBST(T->rchild, key);
+}
+void MiddleOrderTree(BitTree &T){
+	if (!T)
+		return;
+	MiddleOrderTree(T->lchild);
+	printf("%d ", T->data);
+	MiddleOrderTree(T->rchild);
+}
+int main(){
+	int i = 0; BitTree T = NULL;
+	int a[10] = {62,88,58,47,35,73,51,99,37,93};
+	for (i; i < 10; i++)
+		InsertBST(T,a[i]);
+	MiddleOrderTree(T);
+	printf("\n");
+	int key = 47;
+	DeleteBST(T, key);
+	MiddleOrderTree(T);
+}
