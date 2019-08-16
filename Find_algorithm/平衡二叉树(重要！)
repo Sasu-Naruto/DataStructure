@@ -1,0 +1,128 @@
+#include<iostream>
+#include<stdlib.h>
+#include<stdio.h>
+
+#define LH 1
+#define EH 0
+#define RH -1
+
+typedef struct BitNode{
+	int data;
+	int bf;    //结点的平衡因子
+	BitNode *lchild, *rchild;
+}BitNode,*BitTree;
+void R_Rotate(BitTree &p){
+	BitTree L;
+	L = p->lchild;
+	p->lchild = L->rchild;
+	L->rchild = p;
+	p = L;
+}
+void L_Rotate(BitTree &p){
+	BitTree R;
+	R = p->rchild;
+	p->rchild = R->lchild;
+	R->lchild = p;
+	p = R;
+}
+//左子树高于右子树时：LL：仅右旋；LR：左旋根节点左子树后再右旋根节点
+void LeftBalance(BitTree &T){
+	BitTree L, Lr;
+	L = T->lchild;
+	switch (L->bf){
+	case LH:                  //插入新结点
+		R_Rotate(T);
+		T->bf = L->bf = EH;   //更新平衡因子
+		break;
+	case RH:
+		L_Rotate(T->lchild);
+		R_Rotate(T);
+		L->bf = LH;
+		T->bf = EH;
+		break;
+	}
+}
+//右子树高于左子树时：RR：仅左旋；RL：右旋根节点右子树后再左旋根节点
+void RightBalance(BitTree &T){
+	BitTree R;
+	R = T->rchild;
+	switch (R->bf){
+	case RH:                  //插入新结点
+		L_Rotate(T);
+		T->bf = R->bf = EH;   //更新平衡因子
+		break;
+	case LH:
+		R_Rotate(T->rchild);
+		L_Rotate(T);
+		R->bf = RH;
+		T->bf = EH;
+		break;
+	}
+}
+bool InsertAVL(BitTree &T, int e, bool &taller){
+//e:插入数据，taller：检测树是否变高
+//树为空树时
+	if (!T){   
+		T = (BitTree)malloc(sizeof(BitNode));
+		T->data = e;
+		T->bf = EH;
+		T->lchild = T->rchild = NULL;
+		taller = true;     //树已长高
+	}
+	else if (e < T->data){
+		InsertAVL(T->lchild, e, taller);  //递归方法插入左子树；树的构建：递归
+		if (!taller)
+			return false;
+		else if (taller){
+			switch (T->bf){
+			  case LH:        //左子树高度>1，需要左平衡处理
+				  LeftBalance(T);
+				  taller = false;  //左平衡处理后树高度未变化
+				  break;
+			  case RH:
+				  T->bf = EH;   //原本右子树高，现在变为左右子树高度未变
+				  taller = false;
+				  break;
+			  case EH:
+				  T->bf = LH;  //原本左右子树等高，现在变为左子树更高
+				  taller = true;
+				  break;
+			}
+		}
+	}
+	else{
+		InsertAVL(T->rchild, e, taller);
+		if (!taller)
+			return false;
+		else if (taller){
+			switch (T->bf){
+			case RH:        //右子树高度>1，需要左平衡处理
+				RightBalance(T);
+				taller = false;  //左平衡处理后树高度未变化
+				break;
+			case LH:
+				T->bf = EH;   //原本左子树高，现在变为左右子树高度未变
+				taller = false;
+				break;
+			case EH:
+				T->bf = RH;  //原本左右子树等高，现在变为右子树更高
+				taller = true;
+				break;
+			}
+		}
+	}
+}
+void MiddleOrderTree(BitTree &T){
+	if (!T)
+		return;
+	MiddleOrderTree(T->lchild);
+	printf("%d ", T->data);
+	MiddleOrderTree(T->rchild);
+}
+int main(){
+	BitTree T = NULL; bool taller = true;
+	int a[10] = {3,2,1,4,5,6,7,10,9,8};
+	for (int i = 0; i < 10; i++)
+		InsertAVL(T, a[i], taller);
+	MiddleOrderTree(T);
+}
