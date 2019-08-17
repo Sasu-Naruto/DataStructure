@@ -1,0 +1,49 @@
+#include<iostream>
+#include<stdlib.h>
+#include<stdio.h>
+
+#define HASHSIZE 12   //哈希表表长
+#define NULLKEY -32768
+int m = 0; //散列表表长,全局变量
+typedef struct{
+	int count;  //记录元素个数
+	int *elem;  
+}HashTable;
+void Init_HashTable(HashTable &H){
+    m = HASHSIZE;
+	H.count = m;
+	H.elem = (int*)malloc(m*sizeof(int));
+	for (int i = 0; i < m; i++)
+		H.elem[i] = NULLKEY;
+}
+int Hash(int key,int p){
+	return key % p;
+}
+void InsertHashTable(HashTable &H, int key){
+	int addr = Hash(key,H.count);
+	while (H.elem[addr] != NULLKEY)
+		addr = (addr + 1) % H.count;   //冲突后采用线性探测法
+	H.elem[addr] = key;
+}
+bool Search_Hash(HashTable &H, int key){
+	int addr = Hash(key,H.count);
+	while (H.elem[addr]!=key){
+		addr = (addr + 1) % H.count;
+		if (H.elem[addr] == NULLKEY || addr == Hash(key,H.count))//防止循环回到原点
+		{
+			printf("表中不存在该元素！\n");      //一旦有空地址或循环至原点则可以结束循环
+			return false; 
+		}
+	}
+	printf("该元素已找到\n");
+	return true;
+}
+int main(){
+	int a[12] = {12,67,56,16,25,37,22,29,15,47,48,34};
+	int key = 67;
+	HashTable H;
+	Init_HashTable(H);
+	for (int i = 0; i < H.count; i++)
+		InsertHashTable(H, a[i]);
+	Search_Hash(H, key);
+}
