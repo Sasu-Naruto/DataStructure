@@ -1,0 +1,47 @@
+#include<iostream>
+#include<stdio.h>
+#include<stdlib.h>
+
+#define MAXSIZE 100
+typedef struct {
+	int *data;
+	int length;
+}SqList;
+void CreatSqList(SqList &L){
+	L.length = 0;
+	L.data = (int*)malloc(MAXSIZE*sizeof(int));
+	int item = 0, i = 0;
+	printf("请输入顺序表内容\n");
+	while (std::cin >> item){
+		L.data[i] = item;
+		i++;
+		L.length++;
+	}
+}
+void show(SqList &L){
+	for (int i = 0; i < L.length; i++)
+		printf("%d ",L.data[i]);
+}
+void swap(SqList &L,int n,int m){
+	int temp = L.data[n];
+	L.data[n] = L.data[m];
+	L.data[m] = temp;
+}
+void BubbleSort(SqList &L){
+	bool flag = true;
+	for (int i = 0; i < L.length&&flag; i++){
+		flag = false;          //初始化flag
+		for (int j = L.length - 2; j >= i; j--){
+			if (L.data[j]>L.data[j+1]){
+				swap(L, j, j+1);
+				flag = true;   //一旦数据交换时说明flag则变为true，否则i可以直接跳过
+			}
+		}
+	}
+}
+int main(){
+	SqList L;
+	CreatSqList(L);
+	BubbleSort(L);
+	show(L);
+}
