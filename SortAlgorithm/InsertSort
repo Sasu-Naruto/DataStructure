@@ -1,0 +1,12 @@
+void InsertSort(SqList &L){
+	int i = 0, j = 0;
+	//插入排序需要辅助空间，设置L.data[0]为哨兵不存储数据
+	for (i = 2; i < L.length; i++) {  //初始值i = 2是由于i = 1的数值作为标准判断插在其值左还是右
+		if (L.data[i] < L.data[i-1]){    //需要插入左边
+			L.data[0] = L.data[i];
+			for (j = i - 1; L.data[j] > L.data[0]; j--)
+				L.data[j + 1] = L.data[j];    //较大的数据后移
+			L.data[j + 1] = L.data[0];  //将辅助空间最小存储值赋值给j+1
+		}
+	}
+}
