@@ -1,0 +1,12 @@
+void SelectSort(SqList &L){
+	int i = 0, min = 0;
+	for (i; i < L.length; i++){
+		min = i ;
+		for (int j = i + 1; j < L.length; j++){
+			if (L.data[min]>L.data[j])
+				min = j;
+		}
+		if (i != min)
+			swap(L, i, min);
+	}
+}
