@@ -1,0 +1,17 @@
+void ShellSort(SqList &L){
+	//插入排序，需要辅助空间
+	int increment = L.length - 1;
+	int i = 0,j = 0;
+	do{
+		increment = increment / 3 + 1;
+		for (i = increment + 1; i<L.length; i++){
+			if (L.data[i]<L.data[i-increment]){
+				L.data[0] = L.data[i];
+				for (j = i - increment; j>0 && L.data[j]>L.data[0]; j -= increment)
+					L.data[j+increment] = L.data[j];
+				L.data[j + increment] = L.data[0];
+			}
+		}
+		//increment = increment / 3 + 1;  写在后面最后incream = 2/3+1不会再次循环，因此循环次数少1。即判断条件写在排序之前
+	} while (increment > 1);
+}
