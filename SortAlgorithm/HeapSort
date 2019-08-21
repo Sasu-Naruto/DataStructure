@@ -1,11 +1,11 @@
-void HeapAdjust(SqList &L, int s, int t);  //先声明要用的函数
-void HeapSort(SqList &L){   //顺序表下标从1开始存储数据，L[0]作为哨兵
+void HeapAdjust(SqList &L, int s, int t);          //先声明要用的函数
+void HeapSort(SqList &L){                          //顺序表下标从1开始存储数据，L[0]作为哨兵
 	int i = 0;
-	for (i =(L.length-1)/2; i > 0; i--)  //从底部根结点开始构造大顶堆
+	for (i =(L.length-1)/2; i > 0; i--)        //从底部根结点开始构造大顶堆
 		HeapAdjust(L,i,L.length-1);
-	for (i = L.length - 1; i > 1; i--){  //当只剩下一个结点时不需要再构造大顶堆排序了
-		swap(L,1,i);                   //交换大顶堆的最大根节点和未排序数列的最后一位
-		HeapAdjust(L, 1, i - 1);       //将除去最大值后的大顶堆重新构造
+	for (i = L.length - 1; i > 1; i--){        //当只剩下一个结点时不需要再构造大顶堆排序了
+		swap(L,1,i);                       //交换大顶堆的最大根节点和未排序数列的最后一位
+		HeapAdjust(L, 1, i - 1);           //将除去最大值后的大顶堆重新构造
 	}
 }
 void HeapAdjust(SqList &L,int s,int t){
@@ -13,11 +13,13 @@ void HeapAdjust(SqList &L,int s,int t){
 	L.data[0] = L.data[s];
 	for (j = s * 2; j <= t; j *= 2){
 		if (j<t&&L.data[j] < L.data[j + 1])
-			++j;                      //左孩子需要比右孩子大
-		if (L.data[j] < L.data[s])
+			++j;                        //左孩子需要比右孩子大
+		//if (L.data[j] <= L.data[0])
+	        if (L.data[j] <= L.data[s])
 			break;                     //根结点已最大
 		L.data[s] = L.data[j];
 		s = j; 
+		L.data[s] = L.data[0];
 	}
-	L.data[s] = L.data[0];  //当根结点换位最大数后，原来的值插入至最大值所在结点(跳出循环后)
+	// L.data[s] = L.data[0];                   //当根结点换位最大数后，原来的值插入至最大值所在结点(跳出循环后)
 }
