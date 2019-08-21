@@ -1,0 +1,26 @@
+int Pattition(SqList &L,int low,int high);
+void QSort(SqList &L, int low, int high);
+void QuickSort(SqList &L){
+	QSort(L,0,L.length-1);   //快速排序是一种递归函数
+}
+void QSort(SqList &L, int low, int high){
+	int pivot = 0;   //枢轴数，左边小于其值，右边大于其值；
+	if (low < high){  //递归结束的判断条件
+		pivot = Pattition(L, low, high);
+		QSort(L, low, pivot - 1);
+		QSort(L, pivot + 1, high);
+	}
+}
+int Pattition(SqList &L, int low, int high){
+	int prvotkey = L.data[low];
+	while (low < high)
+	{
+		while (low < high&&L.data[low] <= L.data[high])
+			high--;
+		swap(L,low,high);
+		while (low < high&&L.data[low] <= L.data[high])
+			low++;
+		swap(L, low, high);
+	}
+	return low;
+}
