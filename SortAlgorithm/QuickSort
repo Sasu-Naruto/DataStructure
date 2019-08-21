@@ -1,26 +1,47 @@
 int Pattition(SqList &L,int low,int high);
 void QSort(SqList &L, int low, int high);
 void QuickSort(SqList &L){
-	QSort(L,0,L.length-1);   //快速排序是一种递归函数
+	//QSort(L,0,L.length-1);   //快速排序是一种递归函数
+	QSort(L,1,L.length-1);   //L.data[0]为待用空间
 }
 void QSort(SqList &L, int low, int high){
-	int pivot = 0;   //枢轴数，左边小于其值，右边大于其值；
-	if (low < high){  //递归结束的判断条件
+	int pivot = 0;     //枢轴数，左边小于其值，右边大于其值；
+	///////////////////////////////////////代码优化3：优化递归操作，采用尾递归优化//////////////////////////////////
+	//if (low < high)
+	while (low < high)
+   {  //递归结束的判断条件
 		pivot = Pattition(L, low, high);
 		QSort(L, low, pivot - 1);
-		QSort(L, pivot + 1, high);
+		low = pivot + 1;  //尾递归
+		//QSort(L, pivot + 1, high);
 	}
 }
 int Pattition(SqList &L, int low, int high){
-	int prvotkey = L.data[low];
+	///////////////////////////////////////代码优化1：优化选取枢轴,采用三数取中法//////////////////////////////////
+	int pivotkey = 0;
+	int m = low + (high - low)/2;   //选取数组中间的坐标
+	if (L.data[high]<L.data[low])
+		swap(L,low,high);
+	if (L.data[m]>L.data[high])
+		swap(L, m, high);
+	if (L.data[m]>L.data[low])
+		swap(L, low, m);            //使得low为三组数中的中间值
+	pivotkey = L.data[low];
+	///////////////////////////////////代码优化2：优化不必要的交换，采用储备位置0通过替换代替交换//////////////////////////////////
+	L.data[0] = pivotkey;
 	while (low < high)
 	{
-		while (low < high&&L.data[low] <= L.data[high])
+		//while (low < high&&L.data[low] <= L.data[high])
+		while (low < high&&pivotkey <= L.data[high])
 			high--;
-		swap(L,low,high);
-		while (low < high&&L.data[low] <= L.data[high])
+		L.data[low] = L.data[high];
+		//swap(L,low,high);
+		//while (low < high&&L.data[low] <= L.data[high])
+		while (low < high&&L.data[low] <= pivotkey)
 			low++;
-		swap(L, low, high);
+		L.data[high] = L.data[low];
+		//swap(L, low, high);
 	}
+	L.data[low] = L.data[0];
 	return low;
 }
